@@ -4,16 +4,18 @@ import com.xfang.mapper.CategoryMapper;
 import com.xfang.pojo.Category;
 import com.xfang.service.CategoryService;
 import com.xfang.utils.ThreadLocalUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-  @Autowired private CategoryMapper categoryMapper;
+  private final CategoryMapper categoryMapper;
+
+  public CategoryServiceImpl(CategoryMapper categoryMapper) {
+    this.categoryMapper = categoryMapper;
+  }
 
   @Override
   public void add(Category category) {

@@ -5,15 +5,17 @@ import com.xfang.pojo.User;
 import com.xfang.service.UserService;
 import com.xfang.utils.Md5Util;
 import com.xfang.utils.ThreadLocalUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-  @Autowired private UserMapper userMapper;
+  private final UserMapper userMapper;
+
+  public UserServiceImpl(UserMapper userMapper) {
+    this.userMapper = userMapper;
+  }
 
   @Override
   public User findByUsername(String username) {

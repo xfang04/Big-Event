@@ -7,24 +7,26 @@ import com.xfang.utils.JwtUtil;
 import com.xfang.utils.Md5Util;
 import com.xfang.utils.ThreadLocalUtil;
 import jakarta.validation.constraints.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
 @Validated
 public class UserController {
 
-  @Autowired private UserService userService;
+  private final UserService userService;
+
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
   @PostMapping("/register")
-  public Result register(
+  public Result<String> register(
       @Pattern(regexp = "^[a-zA-Z0-9_]{5,16}$", message = "用户名长度不符合要求") String username,
       @Pattern(regexp = "^[a-zA-Z0-9_]{5,16}$", message = "密码长度不符合要求") String password) {
 
@@ -32,15 +34,13 @@ public class UserController {
     User user = userService.findByUsername(username);
     if (user != null) {
       return Result.error("用户名已存在");
-    } else {
-      // register
-      userService.register(username, password);
-      return Result.success();
     }
+    userService.register(username, password);
+    return Result.success();
   }
 
   @PostMapping("/login")
-  public Result login(
+  public Result<String> login(
       @Pattern(regexp = "^[a-zA-Z0-9_]{5,16}$", message = "用户名长度不符合要求") String username,
       @Pattern(regexp = "^[a-zA-Z0-9_]{5,16}$", message = "密码长度不符合要求") String password) {
 
@@ -48,17 +48,17 @@ public class UserController {
     User user = userService.findByUsername(username);
     if (user == null) {
       return Result.error("用户名不存在");
+    }
+
+    // login
+    if (Md5Util.getMD5String(password).equals(user.getPassword())) {
+      Map<String, Object> claims = new HashMap<>();
+      claims.put("id", user.getId());
+      claims.put("username", username);
+      String token = JwtUtil.genToken(claims);
+      return Result.success(token);
     } else {
-      // login
-      if (Md5Util.getMD5String(password).equals(user.getPassword())) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
-        claims.put("username", username);
-        String token = JwtUtil.genToken(claims);
-        return Result.success(token);
-      } else {
-        return Result.error("密码错误");
-      }
+      return Result.error("密码错误");
     }
   }
 
@@ -71,19 +71,24 @@ public class UserController {
   }
 
   @PutMapping("/update")
-  public Result update(@RequestBody @Validated User user) {
+  public Result<String> update(@RequestBody @Validated User user) {
+    Map<String, Object> claims = ThreadLocalUtil.get();
+    Integer id = (Integer) claims.get("id");
+    if (!id.equals(user.getId())) {
+      return Result.error("非法操作");
+    }
     userService.update(user);
     return Result.success();
   }
 
   @PatchMapping("/updateAvatar")
-  public Result updateAvatar(@RequestParam @URL String avatarUrl) {
+  public Result<String> updateAvatar(@RequestParam @URL String avatarUrl) {
     userService.updateAvatar(avatarUrl);
     return Result.success();
   }
 
   @PatchMapping("/updatePwd")
-  public Result updatePwd(@RequestBody Map<String, String> params) {
+  public Result<String> updatePwd(@RequestBody Map<String, String> params) {
     String oldPwd = params.get("old_pwd");
     String newPwd = params.get("new_pwd");
     String rePwd = params.get("re_pwd");
