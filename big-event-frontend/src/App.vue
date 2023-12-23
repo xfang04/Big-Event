@@ -1,17 +1,9 @@
+<script setup></script>
+
 <template>
-  <div id="app">
-    <h1>Hello, Vue!</h1>
+  <div>
+    <h1>Vue 3 + Vite + TypeScript + Tailwind CSS</h1>
   </div>
 </template>
 
-<script lang="ts">
-export default {
-  name: 'App',
-}
-</script>
-
-<style scoped>
-h1 {
-  color: #42b983;
-}
-</style>
+<style scoped></style>
