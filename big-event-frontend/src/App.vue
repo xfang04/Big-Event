@@ -1,9 +1,9 @@
-<script setup></script>
+<script setup>
+import LoginVue from "@/views/Login.vue";
+</script>
 
 <template>
-  <div>
-    <h1>Vue 3 + Vite + TypeScript + Tailwind CSS</h1>
-  </div>
+  <LoginVue />
 </template>
 
 <style scoped></style>
