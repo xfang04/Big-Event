@@ -1,9 +1,7 @@
-<script setup>
-import LoginVue from "@/views/Login.vue";
-</script>
+<script setup></script>
 
 <template>
-  <LoginVue />
+  <router-view />
 </template>
 
 <style scoped></style>
