@@ -25,3 +25,11 @@ export const articleCategoryUpdateService = (categoryModel) => {
     data: categoryModel,
   });
 };
+
+export const articleCategoryDeleteService = (id) => {
+  return request({
+    url: "/category",
+    method: "delete",
+    params: { id },
+  });
+};

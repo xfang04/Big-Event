@@ -2,10 +2,8 @@ package com.xfang.mapper;
 
 import com.xfang.pojo.Category;
 import java.util.List;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface CategoryMapper {
@@ -23,4 +21,7 @@ public interface CategoryMapper {
   @Update(
       "update category set category_name = #{categoryName}, category_alias = #{categoryAlias}, update_time = #{updateTime} where id = #{id}")
   void update(Category category);
+
+  @Delete("delete from category where id = #{id}")
+  void delete(Integer id);
 }

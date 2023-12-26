@@ -4,10 +4,11 @@ import { ref } from "vue";
 //获取所有文章分类数据
 import {
   articleCategoryAddService,
+  articleCategoryDeleteService,
   articleCategoryListService,
   articleCategoryUpdateService,
 } from "@/api/article.js";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const getAllCategory = async () => {
   let result = await articleCategoryListService();
@@ -74,6 +75,27 @@ const updateCategory = async () => {
   await getAllCategory();
 };
 
+const deleteCategory = (row) => {
+  ElMessageBox.confirm("你确认删除该分类信息吗？", "温馨提示", {
+    confirmButtonText: "确认",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(async () => {
+      //用户点击了确认
+      let result = await articleCategoryDeleteService(row.id);
+      ElMessage.success(result.message ? result.message : "删除成功");
+      //再次调用getAllCategory，获取所有文章分类
+      await getAllCategory();
+    })
+    .catch(() => {
+      //用户点击了取消
+      ElMessage({
+        type: "info",
+        message: "取消删除",
+      });
+    });
+};
 const clearForm = () => {
   categoryModel.value.categoryName = "";
   categoryModel.value.categoryAlias = "";
@@ -121,7 +143,13 @@ const showEditDialog = (row) => {
             type="primary"
             @click="showEditDialog(row)"
           ></el-button>
-          <el-button :icon="Delete" circle plain type="danger"></el-button>
+          <el-button
+            :icon="Delete"
+            circle
+            plain
+            type="danger"
+            @click="deleteCategory(row)"
+          ></el-button>
         </template>
       </el-table-column>
       <template #empty>
