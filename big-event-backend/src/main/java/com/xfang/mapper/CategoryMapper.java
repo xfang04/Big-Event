@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface CategoryMapper {
@@ -15,4 +16,11 @@ public interface CategoryMapper {
 
   @Select("select * from category where create_user = #{id}")
   List<Category> list(Integer id);
+
+  @Select("select * from category where id = #{id}")
+  Category findById(Integer id);
+
+  @Update(
+      "update category set category_name = #{categoryName}, category_alias = #{categoryAlias}, update_time = #{updateTime} where id = #{id}")
+  void update(Category category);
 }

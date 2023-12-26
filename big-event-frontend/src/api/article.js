@@ -16,3 +16,12 @@ export const articleCategoryAddService = (categoryModel) => {
     data: categoryModel,
   });
 };
+
+//修改分类
+export const articleCategoryUpdateService = (categoryModel) => {
+  return request({
+    url: "/category",
+    method: "put",
+    data: categoryModel,
+  });
+};
