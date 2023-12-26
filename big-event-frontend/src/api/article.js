@@ -8,3 +8,11 @@ export const articleCategoryListService = () => {
     method: "get",
   });
 };
+
+export const articleCategoryAddService = (categoryModel) => {
+  return request({
+    url: "/category",
+    method: "post",
+    data: categoryModel,
+  });
+};

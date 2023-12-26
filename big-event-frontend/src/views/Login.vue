@@ -4,10 +4,12 @@ import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import { userLoginService, userRegisterService } from "@/api/user.js";
 import { useRouter } from "vue-router";
+import { useTokenStore } from "@/stores/token.js";
 
 const router = useRouter();
 //控制注册与登录表单的显示， 默认显示注册
 const isRegister = ref(false);
+const tokenStore = useTokenStore();
 const registerData = ref({
   username: "",
   password: "",
@@ -36,12 +38,14 @@ const registerDataRules = ref({
 const register = async () => {
   //提交注册表单
   let result = await userRegisterService(registerData.value);
+  tokenStore.setToken(result.data);
   ElMessage.success(result.msg ? result.msg : "注册成功!");
   await router.push("/");
 };
 const login = async () => {
   //提交登录表单
   let result = await userLoginService(registerData.value);
+  tokenStore.setToken(result.data);
   ElMessage.success(result.msg ? result.msg : "登录成功!");
   await router.push("/");
 };
