@@ -33,3 +33,19 @@ export const articleCategoryDeleteService = (id) => {
     params: { id },
   });
 };
+
+export const articleListService = (params) => {
+  return request({
+    url: "/article",
+    method: "get",
+    params: params,
+  });
+};
+
+export const articleAddService = (articleModel) => {
+  return request({
+    url: "/article",
+    method: "post",
+    data: articleModel,
+  });
+};
