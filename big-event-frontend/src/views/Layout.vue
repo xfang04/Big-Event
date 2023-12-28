@@ -10,6 +10,54 @@ import {
   UserFilled,
 } from "@element-plus/icons-vue";
 import avatar from "@/assets/default.png";
+//导入接口函数
+import { userInfoGetService } from "@/api/user.js";
+//导入pinia
+import { useUserInfoStore } from "@/stores/userinfo.js";
+import { useRouter } from "vue-router";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { useTokenStore } from "@/stores/token.js";
+
+const userInfoStore = useUserInfoStore();
+const tokenStore = useTokenStore();
+
+//获取个人信息
+const getUserInf = async () => {
+  let result = await userInfoGetService();
+  //存储pinia
+  userInfoStore.info = result.data;
+};
+getUserInf();
+
+const router = useRouter();
+const handleCommand = (command) => {
+  if (command === "logout") {
+    //退出登录
+    ElMessageBox.confirm("你确认退出登录码？", "温馨提示", {
+      confirmButtonText: "确认",
+      cancelButtonText: "取消",
+      type: "warning",
+    })
+      .then(async () => {
+        //用户点击了确认
+        //清空pinia中的token和个人信息
+        userInfoStore.info = {};
+        tokenStore.token = "";
+        //跳转到登录页
+        await router.push("/login");
+      })
+      .catch(() => {
+        //用户点击了取消
+        ElMessage({
+          type: "info",
+          message: "取消退出",
+        });
+      });
+  } else {
+    //路由
+    router.push("/user/" + command);
+  }
+};
 </script>
 
 <template>
@@ -67,28 +115,40 @@ import avatar from "@/assets/default.png";
     <el-container>
       <!-- 头部区域 -->
       <el-header>
-        <div>黑马程序员：<strong>东哥</strong></div>
-        <el-dropdown placement="bottom-end">
+        <div>
+          黑马程序员：<strong>{{
+            userInfoStore.info.nickname
+              ? userInfoStore.info.nickname
+              : userInfoStore.info.usrename
+          }}</strong>
+        </div>
+        <el-dropdown placement="bottom-end" @command="handleCommand">
           <span class="el-dropdown__box">
-            <el-avatar :src="avatar" />
+            <el-avatar
+              :src="
+                userInfoStore.info.userPic ? userInfoStore.info.userPic : avatar
+              "
+            />
             <el-icon>
               <CaretBottom />
             </el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :icon="User" command="profile"
-                >基本资料
-              </el-dropdown-item>
-              <el-dropdown-item :icon="Crop" command="avatar"
-                >更换头像
-              </el-dropdown-item>
-              <el-dropdown-item :icon="EditPen" command="password"
-                >重置密码
-              </el-dropdown-item>
-              <el-dropdown-item :icon="SwitchButton" command="logout"
-                >退出登录
-              </el-dropdown-item>
+              <el-dropdown-menu>
+                <el-dropdown-item :icon="User" command="info"
+                  >基本资料
+                </el-dropdown-item>
+                <el-dropdown-item :icon="Crop" command="avatar"
+                  >更换头像
+                </el-dropdown-item>
+                <el-dropdown-item :icon="EditPen" command="password"
+                  >重置密码
+                </el-dropdown-item>
+                <el-dropdown-item :icon="SwitchButton" command="logout"
+                  >退出登录
+                </el-dropdown-item>
+              </el-dropdown-menu>
             </el-dropdown-menu>
           </template>
         </el-dropdown>

@@ -23,3 +23,25 @@ export const userLoginService = (loginForm) => {
     params,
   });
 };
+
+//获取个人信息
+export const userInfoGetService = () => {
+  return request({
+    url: "/user/userInfo",
+    method: "get",
+  });
+};
+
+export const userInfoUpdateService = (userInfo) => {
+  return request.put("/user/update", userInfo);
+};
+
+export const userAvatarUpdateService = (avatarUrl) => {
+  let params = new URLSearchParams();
+  params.append("avatarUrl", avatarUrl);
+  return request({
+    url: "/user/updateAvatar",
+    method: "patch",
+    params,
+  });
+};
